@@ -49,21 +49,35 @@ filter_words = ['a', 'about', 'above', 'across', 'after', 'afterwards', 'again',
 filter_words = set(filter_words)
 
 
-def get_sim_embed(embed_path, sim_path):
+class Similarity:
+    def __init__(self, embeddings):
+        norm = np.linalg.norm(embeddings, axis=1, keepdims=True)
+        self.embeddings = np.asarray(embeddings / norm, "float32")
+
+    def __getitem__(self, key):
+        i, j = key
+        return self.embeddings[i].dot(self.embeddings[j])
+  
+
+def get_sim_embed(embed_path, sim_path=None):
     id2word = {}
     word2id = {}
-
+    embeddings = []
+    
     with open(embed_path, 'r', encoding='utf-8') as ifile:
         for line in ifile:
             word = line.split()[0]
             if word not in id2word:
                 id2word[len(id2word)] = word
                 word2id[word] = len(id2word) - 1
-
-    cos_sim = np.load(sim_path)
+                embedding = [float(num) for num in line.strip().split()[1:]]
+                embeddings.append(embedding)
+    
+    embeddings = np.array(embeddings)
+    cos_sim = Similarity(embeddings)
     return cos_sim, word2id, id2word
 
-
+  
 def get_data_cls(data_path):
     lines = open(data_path, 'r', encoding='utf-8').readlines()[1:]
     features = []
