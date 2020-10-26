@@ -12,8 +12,8 @@ import torch
 import torch.nn as nn
 import json
 from torch.utils.data import DataLoader, SequentialSampler, TensorDataset
-from transformers import BertConfig, BertTokenizer
-from transformers import BertForSequenceClassification, BertForMaskedLM
+from transformers import AutoConfig, AutoTokenizer
+from transformers import AutoModelForSequenceClassification, AutoModelForMaskedLM
 import copy
 import argparse
 import numpy as np
@@ -474,15 +474,15 @@ def run_attack():
 
     print('start process')
 
-    tokenizer_mlm = BertTokenizer.from_pretrained(mlm_path, do_lower_case=True)
-    tokenizer_tgt = BertTokenizer.from_pretrained(tgt_path, do_lower_case=True)
+    tokenizer_mlm = AutoTokenizer.from_pretrained(mlm_path, do_lower_case=True)
+    tokenizer_tgt = AutoTokenizer.from_pretrained(tgt_path, do_lower_case=True)
 
-    config_atk = BertConfig.from_pretrained(mlm_path)
-    mlm_model = BertForMaskedLM.from_pretrained(mlm_path, config=config_atk)
+    config_atk = AutoConfig.from_pretrained(mlm_path)
+    mlm_model = AutoModelForMaskedLM.from_pretrained(mlm_path, config=config_atk)
     mlm_model.to('cuda')
 
-    config_tgt = BertConfig.from_pretrained(tgt_path, num_labels=num_label)
-    tgt_model = BertForSequenceClassification.from_pretrained(tgt_path, config=config_tgt)
+    config_tgt = AutoConfig.from_pretrained(tgt_path, num_labels=num_label)
+    tgt_model = AutoModelForSequenceClassification.from_pretrained(tgt_path, config=config_tgt)
     tgt_model.to('cuda')
     features = get_data_cls(data_path)
     print('loading sim-embed')
