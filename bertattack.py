@@ -305,7 +305,7 @@ def attack(feature, tgt_model, mlm_model, tokenizer, k, batch_size, max_length=5
             if substitute in filter_words:
                 continue
             if substitute in w2i and tgt_word in w2i:
-                if cos_mat[w2i[substitute]][w2i[tgt_word]] < 0.4:
+                if cos_mat[w2i[substitute], w2i[tgt_word]] < 0.4:
                     continue
             temp_replace = final_words
             temp_replace[top_index[0]] = substitute
