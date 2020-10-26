@@ -243,13 +243,13 @@ def attack(feature, tgt_model, mlm_model, tokenizer, k, batch_size, max_length=5
 
     # original label
     inputs = tokenizer.encode_plus(feature.seq, None, add_special_tokens=True, max_length=max_length, )
-    input_ids, token_type_ids = torch.tensor(inputs["input_ids"]), torch.tensor(inputs["token_type_ids"])
+    input_ids, token_type_ids = torch.tensor(inputs["input_ids"]), None # torch.tensor(inputs["token_type_ids"])
     attention_mask = torch.tensor([1] * len(input_ids))
     seq_len = input_ids.size(0)
     orig_probs = tgt_model(input_ids.unsqueeze(0).to('cuda'),
-                           attention_mask.unsqueeze(0).to('cuda'),
-                           token_type_ids.unsqueeze(0).to('cuda')
-                           )[0].squeeze()
+                           attention_mask.unsqueeze(0).to('cuda'))[0].squeeze()
+#                            token_type_ids.unsqueeze(0).to('cuda')
+#                            )[0].squeeze()
     orig_probs = torch.softmax(orig_probs, -1)
     orig_label = torch.argmax(orig_probs)
     current_prob = orig_probs.max()
