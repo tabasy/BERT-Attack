@@ -135,18 +135,18 @@ def get_important_scores(words, tgt_model, orig_prob, orig_label, orig_probs, to
     all_segs = []
     for text in texts:
         inputs = tokenizer.encode_plus(text, None, add_special_tokens=True, max_length=max_length, )
-        input_ids, token_type_ids = inputs["input_ids"], inputs["token_type_ids"]
+        input_ids, token_type_ids = inputs["input_ids"], None #inputs["token_type_ids"]
         attention_mask = [1] * len(input_ids)
         padding_length = max_length - len(input_ids)
         input_ids = input_ids + (padding_length * [0])
-        token_type_ids = token_type_ids + (padding_length * [0])
+        # token_type_ids = token_type_ids + (padding_length * [0])
         attention_mask = attention_mask + (padding_length * [0])
         all_input_ids.append(input_ids)
         all_masks.append(attention_mask)
-        all_segs.append(token_type_ids)
+        # all_segs.append(token_type_ids)
     seqs = torch.tensor(all_input_ids, dtype=torch.long)
     masks = torch.tensor(all_masks, dtype=torch.long)
-    segs = torch.tensor(all_segs, dtype=torch.long)
+    # segs = torch.tensor(all_segs, dtype=torch.long)
     seqs = seqs.to('cuda')
 
     eval_data = TensorDataset(seqs)
@@ -500,11 +500,11 @@ def run_attack():
             seq_a, label = feature
             feat = Feature(seq_a, label)
             print('\r number {:d} '.format(index) + tgt_path, end='')
-            # print(feat.seq[:100], feat.label)
+            print(feat.label, feat.seq[:100])
             feat = attack(feat, tgt_model, mlm_model, tokenizer_tgt, k, batch_size=32, max_length=512,
                           cos_mat=cos_mat, w2i=w2i, i2w=i2w, use_bpe=use_bpe,threshold_pred_score=threshold_pred_score)
 
-            # print(feat.changes, feat.change, feat.query, feat.success)
+            print(feat.success, feat.changes, feat.change, feat.query)
             if feat.success > 2:
                 print('success', end='')
             else:
