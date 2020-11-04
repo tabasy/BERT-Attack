@@ -500,16 +500,16 @@ def run_attack():
         for index, feature in enumerate(features[start:end]):
             seq_a, label = feature
             feat = Feature(seq_a, label)
-            print('\r number {:d} '.format(index) + tgt_path, end='')
+            print('\r number {:d} '.format(index) + tgt_path, end=' ')
             print(feat.label, feat.seq[:100])
             feat = attack(feat, tgt_model, mlm_model, tokenizer_tgt, k, batch_size=32, max_length=512,
                           cos_mat=cos_mat, w2i=w2i, i2w=i2w, use_bpe=use_bpe,threshold_pred_score=threshold_pred_score)
-
-            print(feat.success, feat.changes, feat.change, feat.query)
             if feat.success > 2:
-                print('success', end='')
+                print('success')
             else:
-                print('failed', end='')
+                print('failed')
+            print(feat.success, feat.final_adverse, feat.changes, feat.query)
+            print()
             features_output.append(feat)
 
     evaluate(features_output)
