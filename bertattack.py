@@ -259,7 +259,7 @@ def attack(feature, tgt_model, mlm_model, tokenizer, k, batch_size, max_length=5
         feature.success = 3
         return feature
 
-    sub_words = ['[CLS]'] + sub_words[:max_length - 2] + ['[SEP]']
+    sub_words = [tokenizer.cls_token] + sub_words[:max_length - 2] + [tokenizer.sep_token]
     input_ids_ = torch.tensor([tokenizer.convert_tokens_to_ids(sub_words)])
     word_predictions = mlm_model(input_ids_.to(device))[0].squeeze()  # seq-len(sub) vocab
     word_pred_scores_all, word_predictions = torch.topk(word_predictions, k, -1)  # seq-len k
